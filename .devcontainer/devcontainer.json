@@ -12,7 +12,25 @@
 	},
 
 	// Set *default* container specific settings.json values on container create.
-	"settings": {},
+	"settings": {
+		"editor.formatOnSave": false,
+		"editor.defaultFormatter": "esbenp.prettier-vscode",
+		"editor.codeActionsOnSave": {
+		"source.fixAll": true
+		},
+		"mochaExplorer.files": "test/**/*.{j,t}s",
+		"mochaExplorer.fullTrace": true,
+		"mochaExplorer.exit": true,
+		"solidity.linter": "solhint",
+		"solidity.defaultCompiler": "remote",
+		"solidity.compileUsingRemoteVersion": "v0.8.10+commit.fc410830",
+		"solidity.packageDefaultDependenciesContractsDirectory": "",
+		"solidity.enabledAsYouTypeCompilationErrorCheck": true,
+		"solidity.validationDelay": 1500,
+		"solidity.packageDefaultDependenciesDirectory": "node_modules",
+		"solidity-va.deco.statevars": true,
+		"solidity-va.preview.markdown": true,
+	},
 
 	// Add the IDs of extensions you want installed when the container is created.
 	"extensions": [
