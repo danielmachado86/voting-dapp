@@ -44,7 +44,6 @@ contract Voting is Ownable{
     }
 
     function removeVoter(address _address) public onlyOwner isRegistered(_address) {
-        require(voters[_address].isRegistered, "Voter not registered!!!");
         voters[_address].isRegistered = false;
     }
 
