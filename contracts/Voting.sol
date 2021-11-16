@@ -25,12 +25,11 @@ contract Voting is Ownable{
     }
 
     address administrator;
-    mapping (address => Voter) voters;
+    mapping (address => Voter) public voters;
     Proposal[] public proposals;
     ProcessStatus public processStatus;
 
     constructor () {
-        administrator = msg.sender;
         processStatus = ProcessStatus.RegisteringVoters;
     }
 
@@ -41,10 +40,14 @@ contract Voting is Ownable{
     function addVoter(address _address) public onlyOwner {
         require(!voters[_address].isRegistered, "Voter already registered!!!");
         voters[_address].isRegistered = true;
+        voters[_address].hasVoted = false;
+        voters[_address].votedProposalId = 0;
     }
 
     function removeVoter(address _address) public onlyOwner isRegistered(_address) {
         voters[_address].isRegistered = false;
+        voters[_address].hasVoted = false;
+        voters[_address].votedProposalId = 0;
     }
 
     function addProposal(string memory _name) public isRegistered(msg.sender) {
