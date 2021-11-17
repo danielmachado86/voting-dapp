@@ -37,20 +37,34 @@ contract Voting is Ownable{
         require(voters[_address].isRegistered, "Voter not registered!!!");
         _;
     }
-    function addVoter(address _address) public onlyOwner {
+
+    modifier isRegisteringVoters() {
+        require(processStatus == ProcessStatus.RegisteringVoters, "Process must be in voters registration phase!!!");
+        _;
+    }
+
+    modifier isRegisteringProposals() {
+        require(processStatus == ProcessStatus.ProposalRegistrationStarted, "Process must be in voters registration phase!!!");
+        _;
+    }
+    function addVoter(address _address) public onlyOwner isRegisteringVoters {
         require(!voters[_address].isRegistered, "Voter already registered!!!");
         voters[_address].isRegistered = true;
         voters[_address].hasVoted = false;
         voters[_address].votedProposalId = 0;
     }
 
-    function removeVoter(address _address) public onlyOwner isRegistered(_address) {
+    function removeVoter(address _address) public onlyOwner isRegisteringVoters isRegistered(_address) {
         voters[_address].isRegistered = false;
         voters[_address].hasVoted = false;
         voters[_address].votedProposalId = 0;
     }
 
-    function addProposal(string memory _name) public isRegistered(msg.sender) {
+    function startProposalRegistration() public onlyOwner {
+        processStatus = ProcessStatus.ProposalRegistrationStarted;
+    }
+
+    function addProposal(string memory _name) public isRegisteringProposals isRegistered(msg.sender) {
         proposals.push(Proposal(_name, 0));
     }
 
