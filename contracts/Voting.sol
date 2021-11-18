@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.10;
+pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 
@@ -19,7 +19,7 @@ contract Voting is Ownable{
     enum ProcessStatus {
         RegisteringVoters,
         ProposalRegistrationStarted,
-        ProposalRegistrationStartedEnded,
+        ProposalRegistrationEnded,
         VotingStarted,
         VotingEnded
     }
@@ -66,6 +66,14 @@ contract Voting is Ownable{
 
     function addProposal(string memory _name) public isRegisteringProposals isRegistered(msg.sender) {
         proposals.push(Proposal(_name, 0));
+    }
+
+    function endProposalRegistration() public onlyOwner {
+        processStatus = ProcessStatus.ProposalRegistrationEnded;
+    }
+
+    function startVotesRegistration() public onlyOwner {
+        processStatus = ProcessStatus.VotingStarted;
     }
 
 }
