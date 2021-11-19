@@ -89,9 +89,13 @@ describe("Voting contract", () => {
 
   describe("Registering votes", () => {
     beforeEach(async () => {
-      // await voting.addVoter(addr1.address);
+      await voting.addVoter(addr1.address);
+      await voting.addVoter(addr2.address);
+      await voting.addVoter(addr3.address);
+      await voting.startProposalRegistration();
       await voting.connect(addr2).addProposal("Not so appealing proposal");
       await voting.connect(addr3).addProposal("Change app frontend");
+      await voting.endProposalRegistration();
       await voting.startVotesRegistration();
     });
 
@@ -104,21 +108,26 @@ describe("Voting contract", () => {
     it("Participant should register vote", async () => {
       const proposalId = 1;
       await voting.connect(addr1).addVote(proposalId);
-      const proposal = await voting.proposals(0);
-      expect(proposal[0]).to.equal(proposalName);
+      await voting.connect(addr2).addVote(proposalId);
+      await voting.connect(addr3).addVote(proposalId);
+      const proposalVoteCount = await voting.proposals(proposalId);
+      expect(proposalVoteCount.voteCount).to.equal(3);
     });
 
     it("Participant should not register more than one vote", async () => {
-      const proposalName = "Change app frontend";
-      await voting.connect(addr1).addProposal(proposalName);
-      const proposal = await voting.proposals(0);
-      expect(proposal[0]).to.equal(proposalName);
+      const proposalId = 1;
+      await voting.connect(addr1).addVote(proposalId);
+      await expect(
+        voting.connect(addr1).addVote(proposalId)
+      ).to.be.revertedWith("Participants can vote just one time!!");
+      const proposalVoteCount = await voting.proposals(proposalId);
+      expect(proposalVoteCount.voteCount).to.equal(1);
     });
 
     it("Admin should end proposal registration", async () => {
-      await voting.endProposalRegistration();
+      await voting.endVotesRegistration();
       expect(await voting.processStatus()).to.equal(
-        processStatus.ProposalRegistrationEnded
+        processStatus.VotingEnded
       );
     });
   });
