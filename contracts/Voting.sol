@@ -60,6 +60,11 @@ contract Voting is Ownable{
         _;
     }
 
+    modifier isRegisteringVotesEnded() {
+        require(processStatus == ProcessStatus.VotingEnded, "Voting registration phase must be ended!!!");
+        _;
+    }
+
     function addVoter(address _address) public onlyOwner onlyDuringVotersRegistration {
         require(!voters[_address].isRegistered, "Voter already registered!!!");
         voters[_address].isRegistered = true;
@@ -99,6 +104,22 @@ contract Voting is Ownable{
 
     function endVotesRegistration() public onlyOwner isRegisteringVotes {
         processStatus = ProcessStatus.VotingEnded;
+    }
+
+    function tallyVotes() public onlyOwner isRegisteringVotesEnded {
+        uint i = 0;
+        uint winningProposalIndex = 0;
+        uint winningVoteCount = 0;
+
+        for(i=0; i<=proposals.length-1; i++) {
+            if (proposals[i].voteCount > winningVoteCount) {
+                winningVoteCount = proposals[i].voteCount;
+                winningProposalIndex = i;
+            }
+        }
+
+        winningProposalId = winningProposalIndex;
+        processStatus = ProcessStatus.VotesTallied;
     }
 
 }
