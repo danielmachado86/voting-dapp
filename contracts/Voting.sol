@@ -93,6 +93,14 @@ contract Voting is Ownable{
         voters[_address].votedProposalId = 0;
     }
 
+    function getVotersList() public view onlyOwner onlyDuringVotersRegistration returns (address[] memory) {
+        address[] memory ret = new address[](5);
+        for (uint i = 0; i < 5; i++) {
+            ret[i] = voters[i];
+        }
+        return ret;
+    }
+
     function startProposalRegistration() public onlyOwner {
         processStatus = ProcessStatus.ProposalRegistrationStarted;
 
