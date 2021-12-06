@@ -11,9 +11,10 @@ contract Voting is Ownable{
     }
 
     struct Voter {
+        uint voterId;
+        uint votedProposalId;
         bool isRegistered;
         bool hasVoted;
-        uint votedProposalId;
     }
 
     enum ProcessStatus {
@@ -27,6 +28,7 @@ contract Voting is Ownable{
 
     address public administrator;
     mapping (address => Voter) public voters;
+    address[] private voterList;
     Proposal[] public proposals;
     ProcessStatus public processStatus;
     uint private winningProposalId;
@@ -80,25 +82,23 @@ contract Voting is Ownable{
 
     function addVoter(address _address) public onlyOwner onlyDuringVotersRegistration {
         require(!voters[_address].isRegistered, "Voter already registered!!!");
+        voters[_address].voterId = voterList.length;
         voters[_address].isRegistered = true;
         voters[_address].hasVoted = false;
         voters[_address].votedProposalId = 0;
+        voterList.push(_address);
 
         emit VoterRegisteredEvent(_address);
+    }
+
+    function getVoterList() public view onlyOwner returns (address[] memory){
+        return voterList;
     }
 
     function removeVoter(address _address) public onlyOwner onlyDuringVotersRegistration isRegistered(_address) {
         voters[_address].isRegistered = false;
         voters[_address].hasVoted = false;
         voters[_address].votedProposalId = 0;
-    }
-
-    function getVotersList() public view onlyOwner onlyDuringVotersRegistration returns (address[] memory) {
-        address[] memory ret = new address[](5);
-        for (uint i = 0; i < 5; i++) {
-            ret[i] = voters[i];
-        }
-        return ret;
     }
 
     function startProposalRegistration() public onlyOwner {

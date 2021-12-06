@@ -45,11 +45,20 @@ describe("Voting contract", () => {
     beforeEach(async () => {
       await voting.addVoter(addr1.address);
     });
-
+    
     it("Should not allow to register an existing voter", async () => {
       let voter = await voting.voters(addr1.address);
       expect(voter.isRegistered).to.be.true;
       await expect(voting.addVoter(addr1.address)).to.be.reverted;
+    });
+    it ("Should register a voter", async () => {
+      await voting.addVoter(addr2.address);
+      let voter = await voting.voters(addr2.address);
+      expect(voter.isRegistered).to.be.true;
+      let voterId = voter.voterId;
+      expect(voterId).equal(1);
+      const voterList = await voting.getVoterList();
+      expect(voterList.length).equal(2);
     });
     it("Should remove voter", async () => {
       await voting.removeVoter(addr1.address);

@@ -1,9 +1,11 @@
-import VotingComponent from "./VotingComponent";
+import AddVoterComponent from "./AddVoterComponent";
+import WalletConnectComponent from "./WalletConnectComponent";
 
 function App() {
   return (
     <div className="App">
-      <VotingComponent/>
+      <WalletConnectComponent/>
+      <AddVoterComponent/>
     </div>
   );
 }
