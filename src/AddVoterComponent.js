@@ -25,7 +25,7 @@ const VoterList = () => {
   ];
 }
 
-const AddVoterComponent = (contract) => {
+const AddVoterComponent = ({contract}) => {
   const [message, setMessage] = useState(null);
 
   const [Form, formValue] = TextInput(setMessage);

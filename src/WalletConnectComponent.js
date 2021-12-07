@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 
-const WalletConnectComponent = (contract, setVoters) => {
+const WalletConnectComponent = ({setConnected, contract}) => {
   const [adminAddress, setAdminAddress] = useState(null);
-  const [connected, setConnected] = useState(false);
 
   const [message, setMessage] = useState(null);
 
@@ -18,10 +17,6 @@ const WalletConnectComponent = (contract, setVoters) => {
           accountChangeHandler(result[0]);
           setMessage(null);
           setConnected(true);
-          contract.getVoterList().then((result) => {
-          setVoters(result);
-          console.log(result);
-          });
         })
         .catch((err) => setMessage("Conexion rechazada."));
     } else {
