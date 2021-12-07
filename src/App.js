@@ -10,11 +10,16 @@ const provider = new ethers.providers.Web3Provider(window.ethereum);
 const signer = provider.getSigner();
 const contract = new ethers.Contract(contractAddress, Voting.abi, signer);
 
+
 function App() {
+
+  const [addVoterComponent, setVoters] = AddVoterComponent(contract);
+  const [walletConnectComponent] = WalletConnectComponent(contract, setVoters);
+  
   return (
     <div className="App">
-      <WalletConnectComponent contract={contract} />
-      <AddVoterComponent contract={contract} />
+      {walletConnectComponent}
+      {addVoterComponent}
     </div>
   );
 }

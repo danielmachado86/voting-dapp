@@ -12,18 +12,33 @@ const TextInput = (setMessage) => {
   ];
 };
 
-const AddVoterComponent = (props) => {
+const VoterList = () => {
+  const [voters, setVoters] = useState([]);
+
+  let listItems = '';
+  if (voters.length > 0){
+    listItems = <ul>{voters.map(item => <li key={item}>{item}</li>)}</ul>;
+  }
+  return [
+    listItems,
+    setVoters
+  ];
+}
+
+const AddVoterComponent = (contract) => {
   const [message, setMessage] = useState(null);
 
   const [Form, formValue] = TextInput(setMessage);
+  const [voterList, setVoters] = VoterList();
 
   const setHandler = (event) => {
     event.preventDefault();
     setMessage(null);
-    props.contract
+    contract
       .addVoter(formValue)
       .then((result) => {
         setMessage("Voter has been added succesfully");
+        setVoters(oldArray => [...oldArray, formValue]);
       })
       .catch((error) => {
         if (error.code === 4001) {
@@ -36,15 +51,17 @@ const AddVoterComponent = (props) => {
       });
   };
 
-  return (
+  return [
     <div>
+      {voterList}
       {Form}
       <button type="submit" onClick={setHandler}>
         Add voter
       </button>
       {message}
-    </div>
-  );
+    </div>,
+    setVoters
+  ];
 };
 
 export default AddVoterComponent;
