@@ -12,24 +12,10 @@ const TextInput = (setMessage) => {
   ];
 };
 
-const VoterList = () => {
-  const [voters, setVoters] = useState([]);
-
-  let listItems = '';
-  if (voters.length > 0){
-    listItems = <ul>{voters.map(item => <li key={item}>{item}</li>)}</ul>;
-  }
-  return [
-    listItems,
-    setVoters
-  ];
-}
-
-const AddVoterComponent = ({contract}) => {
+const AddVoterComponent = ({contract, setVoters}) => {
   const [message, setMessage] = useState(null);
 
   const [Form, formValue] = TextInput(setMessage);
-  const [voterList, setVoters] = VoterList();
 
   const setHandler = (event) => {
     event.preventDefault();
@@ -51,17 +37,15 @@ const AddVoterComponent = ({contract}) => {
       });
   };
 
-  return [
+  return (
     <div>
-      {voterList}
       {Form}
       <button type="submit" onClick={setHandler}>
         Add voter
       </button>
       {message}
-    </div>,
-    setVoters
-  ];
+    </div>
+  );
 };
 
 export default AddVoterComponent;
