@@ -19,6 +19,12 @@ const VoterList = ({voters}) => {
   return listItems;
 }
 
+      
+
+const ProposalRegistration = () => {
+    
+}
+
 function App() {
   
   const [connected, setConnected] = useState(false);
@@ -53,11 +59,7 @@ function App() {
         });
     }
   }, [connected]);
-      
 
-  const State = () => {
-    
-  }
 
   return (
     <div className="App">
@@ -66,6 +68,8 @@ function App() {
       <h3>Admin address: {adminAddress}</h3>
       <AddVoterComponent contract={contract} setVoters={setVoters} />
       <VoterList voters={voters} />
+      <div>Proposal registration:</div>
+      <button onClick={connectWalletHandler}>Start</button>
       {message}
 
     </div>
