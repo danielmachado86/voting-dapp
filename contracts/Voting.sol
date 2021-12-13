@@ -61,12 +61,12 @@ contract Voting is Ownable{
     }
 
     modifier isRegisteringProposals() {
-        require(processStatus == ProcessStatus.ProposalRegistrationStarted, "Process must be in voters registration phase!!!");
+        require(processStatus == ProcessStatus.ProposalRegistrationStarted, "Process must be in proposals registration phase!!!");
         _;
     }
 
     modifier isRegisteringProposalsEnded() {
-        require(processStatus == ProcessStatus.ProposalRegistrationEnded, "Voters registration must be finished!!!");
+        require(processStatus == ProcessStatus.ProposalRegistrationEnded, "Proposals registration must be finished!!!");
         _;
     }
 
