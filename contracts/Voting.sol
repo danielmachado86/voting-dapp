@@ -18,7 +18,8 @@ contract Voting is Ownable{
     }
 
     enum ProcessStatus {
-        RegisteringVoters,
+        RegisteringVotersStarted,
+        RegisteringVotersEnded,
         ProposalRegistrationStarted,
         ProposalRegistrationEnded,
         VotingStarted,
@@ -34,6 +35,7 @@ contract Voting is Ownable{
     uint private winningProposalId;
 
     event VoterRegisteredEvent (address voterAddress); 
+    event VotersRegistrationEndedEvent ();
     event ProposalsRegistrationStartedEvent ();
     event ProposalsRegistrationEndedEvent ();
     event ProposalRegisteredEvent(uint proposalId);
@@ -47,7 +49,7 @@ contract Voting is Ownable{
         ProcessStatus newStatus
     );
     constructor () {
-        processStatus = ProcessStatus.RegisteringVoters;
+        processStatus = ProcessStatus.RegisteringVotersStarted;
     }
 
     modifier isRegistered(address _address) {
@@ -56,7 +58,7 @@ contract Voting is Ownable{
     }
 
     modifier onlyDuringVotersRegistration() {
-        require(processStatus == ProcessStatus.RegisteringVoters, "Process must be in voters registration phase!!!");
+        require(processStatus == ProcessStatus.RegisteringVotersStarted, "Process must be in voters registration phase!!!");
         _;
     }
 
@@ -101,6 +103,13 @@ contract Voting is Ownable{
         voters[_address].votedProposalId = 0;
     }
 
+    function endVotersRegistration() public onlyOwner onlyDuringVotersRegistration {
+        processStatus = ProcessStatus.RegisteringVotersEnded;
+
+        emit VotersRegistrationEndedEvent();
+
+    }
+
     function startProposalRegistration() public onlyOwner {
         processStatus = ProcessStatus.ProposalRegistrationStarted;
 
@@ -113,6 +122,10 @@ contract Voting is Ownable{
 
         emit ProposalRegisteredEvent(proposals.length - 1 );
 
+    }
+
+    function getProposalList() public view returns (Proposal[] memory){
+        return proposals;
     }
 
     function endProposalRegistration() public onlyOwner isRegisteringProposals {
@@ -147,6 +160,8 @@ contract Voting is Ownable{
     }
 
     function tallyVotes() public onlyOwner isRegisteringVotesEnded {
+        require(proposals.length > 0, "Empty proposals array!!!");
+
         uint i = 0;
         uint winningProposalIndex = 0;
         uint winningVoteCount = 0;
