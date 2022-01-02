@@ -117,7 +117,7 @@ contract Voting is Ownable{
 
     }
 
-    function addProposal(string memory _name) public isRegisteringProposals isRegistered(msg.sender) {
+    function addProposal(string memory _name) public isRegisteringProposals {
         proposals.push(Proposal(_name, 0));
 
         emit ProposalRegisteredEvent(proposals.length - 1 );

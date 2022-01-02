@@ -12,7 +12,7 @@ const TextInput = (setMessage) => {
   ];
 };
 
-const AddVoterComponent = ({contract, setVoters, status, setStatusHandler, Status}) => {
+const AddVoterComponent = ({contract, setVoters}) => {
   const [message, setMessage] = useState(null);
 
   const [Form, formValue] = TextInput(setMessage);
@@ -35,11 +35,7 @@ const AddVoterComponent = ({contract, setVoters, status, setStatusHandler, Statu
           setMessage(error.message);
         }
       });
-  };
-
-  if(status !== Status.VOTER_REGISTRATION_STARTED){
-    return(<div></div>);
-  }
+  };  
 
   return (
     <div>
@@ -48,7 +44,6 @@ const AddVoterComponent = ({contract, setVoters, status, setStatusHandler, Statu
       <button type="submit" onClick={setHandler}>
         Add voter
       </button>
-      <button onClick={setStatusHandler} >End</button>
       {message}
     </div>
   );
