@@ -4,7 +4,7 @@ import Voting from "./artifacts/contracts/Voting.sol/Voting.json";
 import { useEffect, useState } from "react";
 const { ethers } = require("ethers");
 
-const contractAddress = "0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE";
+const contractAddress = "0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f";
 
 const provider = new ethers.providers.Web3Provider(window.ethereum);
 const signer = provider.getSigner();
@@ -25,16 +25,12 @@ const ProposalRegistration = ({status, contract}) => {
 
 
   useEffect(() => {
-    switch (status) {
-      case 'PROPOSAL_REGISTRATION_STARTED':
+      if(status === 2){
         contract.getProposalList().then((result) => {
           setProposals(result);
         });
-        break;
-      default:
-        break;
-    }
-  }, [status]);
+      }
+  }, [contract, status]);
 
 
   const submitHandler = (e) => {
@@ -42,6 +38,8 @@ const ProposalRegistration = ({status, contract}) => {
     console.log(e.target.proposal.value);
     contract.addProposal(e.target.proposal.value).then(() => {
       setMessage("Proposal has been added succesfully");
+      setProposals(oldArray => [...oldArray, formValue]);
+
     })
     .catch((error) => {
       if (error.code === 4001) {
@@ -53,6 +51,10 @@ const ProposalRegistration = ({status, contract}) => {
       };
     });
   };
+
+  if (status !== 2) {
+    return (<div></div>);
+  }
 
   return(
   <div>
@@ -118,14 +120,14 @@ const StatusManager = ({connected, contract}) => {
 
   const [status, setStatus] = useState(null);
 
-  useEffect(() =>{
+  useEffect((up) =>{
     if(connected){
       contract.processStatus().then((result) => {
         console.log(result);
           setStatus(result);
       });
     }
-  }, [connected])
+  }, [connected, contract])
 
 
   const setStatusHandler = () => {
@@ -179,7 +181,6 @@ const StatusManager = ({connected, contract}) => {
 function App() {
 
   const contract = new ethers.Contract(contractAddress, Voting.abi, signer);
-
 
   return (
     <div className="App">

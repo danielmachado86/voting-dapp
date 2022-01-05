@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const TextInput = (setMessage) => {
   const [voterAddress, setVoterAddress] = useState(null);
@@ -27,6 +27,15 @@ const AddVoterComponent = ({status, contract}) => {
   const [message, setMessage] = useState(null);
   const [Form, formValue] = TextInput(setMessage);
 
+  useEffect(() =>{
+    if (status === 0) {
+      contract.getVoterList().then((result) => {
+        console.log(result);
+          setVoters(result);
+      });
+    }
+  }, [contract, status])
+
   const setHandler = (event) => {
     event.preventDefault();
     setMessage(null);
@@ -46,6 +55,10 @@ const AddVoterComponent = ({status, contract}) => {
         }
       });
   };  
+
+  if (status !== 0) {
+    return (<div></div>);
+  }
 
   return (
     <div>
