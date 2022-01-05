@@ -4,20 +4,10 @@ import Voting from "./artifacts/contracts/Voting.sol/Voting.json";
 import { useEffect, useState } from "react";
 const { ethers } = require("ethers");
 
-const contractAddress = "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9";
+const contractAddress = "0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE";
 
 const provider = new ethers.providers.Web3Provider(window.ethereum);
 const signer = provider.getSigner();
-const contract = new ethers.Contract(contractAddress, Voting.abi, signer);
-
-const VoterList = ({voters}) => {
-
-  let listItems = '';
-  if (voters.length > 0){
-    listItems = <ul>{voters.map(item => <li key={item}>{item}</li>)}</ul>;
-  }
-  return listItems;
-}
 
 const ProposalList = ({proposals}) => {
 
@@ -28,7 +18,7 @@ const ProposalList = ({proposals}) => {
   return listItems;
 }
 
-const ProposalRegistration = ({status}) => {
+const ProposalRegistration = ({status, contract}) => {
 
   const [proposals, setProposals] = useState([]);
   const [message, setMessage] = useState(null);
@@ -41,8 +31,8 @@ const ProposalRegistration = ({status}) => {
           setProposals(result);
         });
         break;
-        default:
-          break;
+      default:
+        break;
     }
   }, [status]);
 
@@ -77,7 +67,7 @@ const ProposalRegistration = ({status}) => {
   );
 }
 
-const WalletConnection = () => {
+const WalletConnection = ({contract}) => {
 
   const [adminAddress, setAdminAddress] = useState(null);
   const [message, setMessage] = useState(null);
@@ -103,61 +93,36 @@ const WalletConnection = () => {
     }
   };
 
-  return [
+  return (
     <div>
-      <h2>{"Voting app"}</h2>
       <button onClick={connectWalletHandler}>Connect</button>
       <h3>Admin address: {adminAddress}</h3>
       {message}
-    </div>,
-    connected
-  ];
+      <StatusManager connected={connected} contract={contract} />
+    </div>
+  );
 
 };
 
-const StatusManager = (connected) => {
-
-  const [status, setStatus] = useState(null);
+const StatusManager = ({connected, contract}) => {
 
   const Status = {
-    VOTER_REGISTRATION_STARTED:'VOTER_REGISTRATION_STARTED',
-    VOTER_REGISTRATION_ENDED:'VOTER_REGISTRATION_ENDED',
-    PROPOSAL_REGISTRATION_STARTED:'PROPOSAL_REGISTRATION_STARTED',
-    PROPOSAL_REGISTRATION_ENDED:'PROPOSAL_REGISTRATION_ENDED',
-    VOTING_STARTED: 'VOTING_STARTED',
-    VOTING_ENDED: 'VOTING_ENDED',
-    VOTES_TALLIED: 'VOTES_TALLIED'
+    0:'VOTER_REGISTRATION_STARTED',
+    1:'VOTER_REGISTRATION_ENDED',
+    2:'PROPOSAL_REGISTRATION_STARTED',
+    3:'PROPOSAL_REGISTRATION_ENDED',
+    4: 'VOTING_STARTED',
+    5: 'VOTING_ENDED',
+    6: 'VOTES_TALLIED'
   };
+
+  const [status, setStatus] = useState(null);
 
   useEffect(() =>{
     if(connected){
       contract.processStatus().then((result) => {
         console.log(result);
-        switch (result) {
-          case 0:
-            setStatus(Status.VOTER_REGISTRATION_STARTED);
-            break;
-          case 1:
-            setStatus(Status.VOTER_REGISTRATION_ENDED);
-            break;
-          case 2:
-            setStatus(Status.PROPOSAL_REGISTRATION_STARTED);
-            break;
-          case 3:
-            setStatus(Status.PROPOSAL_REGISTRATION_ENDED);
-            break;
-          case 4:
-            setStatus(Status.VOTING_STARTED);
-            break;
-          case 5:
-            setStatus(Status.VOTING_ENDED);
-            break;
-          case 6:
-            setStatus(Status.VOTES_TALLIED);
-            break;
-          default:
-            break;
-        };
+          setStatus(result);
       });
     }
   }, [connected])
@@ -166,68 +131,60 @@ const StatusManager = (connected) => {
   const setStatusHandler = () => {
     // console.log(status);
     switch (status) {
-      case 'VOTER_REGISTRATION_STARTED':
+      case 0:
         contract.endVotersRegistration().then((result) => {
-          setStatus(Status.VOTER_REGISTRATION_ENDED);
+          setStatus(status+1);
         });
         break;
-      case 'VOTER_REGISTRATION_ENDED':
+      case 1:
         contract.startProposalRegistration().then((result) => {
-          setStatus(Status.PROPOSAL_REGISTRATION_STARTED);
+          setStatus(status+1);
         });
         break;
-      case 'PROPOSAL_REGISTRATION_STARTED':
+      case 2:
         contract.endProposalRegistration().then((result) => {
-          setStatus(Status.PROPOSAL_REGISTRATION_ENDED);
+          setStatus(status+1);
         });
         break;
-      case 'PROPOSAL_REGISTRATION_ENDED':
+      case 3:
         contract.startVotesRegistration().then((result) => {
-          setStatus(Status.VOTING_STARTED);
+          setStatus(status+1);
         });
         break;
-      case 'VOTING_STARTED':
+      case 4:
         contract.endVotesRegistration().then((result) => {
-          setStatus(Status.VOTING_ENDED);
+          setStatus(status+1);
         });
         break;
-      case 'VOTING_ENDED':
+      case 5:
         contract.tallyVotes().then((result) => {
-          setStatus(Status.VOTES_TALLIED);
+          setStatus(status+1);
         })
-        .catch((error) => console.log(error));
         break;
       default:
         break;
     };
   };
 
-  return [
+  return (
     <div>
-      {status}
+      {Status[status]}
       <button onClick={setStatusHandler}>Next</button> 
-    </div>,
-    status,
-    setStatus
-  ];
+      <AddVoterComponent status={status} contract={contract} />
+      <ProposalRegistration status={status} contract={contract} />
+    </div>
+  );
 };
 
 function App() {
-  
-  const [voters, setVoters] = useState([]);
 
-  const [walletConnection, connected] = WalletConnection();
-  
+  const contract = new ethers.Contract(contractAddress, Voting.abi, signer);
 
-  const [statusManager, status, setStatus] = StatusManager(connected);
 
   return (
     <div className="App">
-      {statusManager}
-      {walletConnection}
-      <AddVoterComponent contract={contract} setVoters={setVoters} />
-      <VoterList voters={voters} />
-      <ProposalRegistration status={status} />
+      <h2>{"Voting app"}</h2>
+      <WalletConnection contract={contract} />
     </div>
   );
 }

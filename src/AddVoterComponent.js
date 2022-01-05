@@ -12,9 +12,19 @@ const TextInput = (setMessage) => {
   ];
 };
 
-const AddVoterComponent = ({contract, setVoters}) => {
-  const [message, setMessage] = useState(null);
+const VoterList = ({voters}) => {
 
+  let listItems = '';
+  if (voters.length > 0){
+    listItems = <ul>{voters.map(item => <li key={item}>{item}</li>)}</ul>;
+  }
+  return listItems;
+}
+
+const AddVoterComponent = ({status, contract}) => {
+
+  const [voters, setVoters] = useState([]);
+  const [message, setMessage] = useState(null);
   const [Form, formValue] = TextInput(setMessage);
 
   const setHandler = (event) => {
@@ -45,6 +55,7 @@ const AddVoterComponent = ({contract, setVoters}) => {
         Add voter
       </button>
       {message}
+      <VoterList voters={voters}/>
     </div>
   );
 };
