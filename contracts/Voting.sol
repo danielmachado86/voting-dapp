@@ -103,17 +103,19 @@ contract Voting is Ownable{
         voters[_address].votedProposalId = 0;
     }
 
-    function endVotersRegistration() public onlyOwner onlyDuringVotersRegistration {
+    function endVotersRegistration() public onlyOwner onlyDuringVotersRegistration returns (ProcessStatus) {
         processStatus = ProcessStatus.RegisteringVotersEnded;
 
         emit VotersRegistrationEndedEvent();
+        return processStatus;
 
     }
 
-    function startProposalRegistration() public onlyOwner {
+    function startProposalRegistration() public onlyOwner returns(ProcessStatus){
         processStatus = ProcessStatus.ProposalRegistrationStarted;
 
         emit ProposalsRegistrationStartedEvent ();
+        return processStatus;
 
     }
 
@@ -128,16 +130,20 @@ contract Voting is Ownable{
         return proposals;
     }
 
-    function endProposalRegistration() public onlyOwner isRegisteringProposals {
+    function endProposalRegistration() public onlyOwner isRegisteringProposals returns(ProcessStatus){
         processStatus = ProcessStatus.ProposalRegistrationEnded;
         emit ProposalsRegistrationEndedEvent ();
 
+        return processStatus;
+
     }
 
-    function startVotesRegistration() public onlyOwner isRegisteringProposalsEnded {
+    function startVotesRegistration() public onlyOwner isRegisteringProposalsEnded returns (ProcessStatus){
         processStatus = ProcessStatus.VotingStarted;
 
         emit VotingSessionStartedEvent ();
+
+        return processStatus;
 
     }
 
@@ -152,11 +158,11 @@ contract Voting is Ownable{
 
     }
 
-    function endVotesRegistration() public onlyOwner isRegisteringVotes {
+    function endVotesRegistration() public onlyOwner isRegisteringVotes returns (ProcessStatus) {
         processStatus = ProcessStatus.VotingEnded;
         
         emit VotingSessionEndedEvent ();
-
+        return processStatus;
     }
 
     function tallyVotes() public onlyOwner isRegisteringVotesEnded {

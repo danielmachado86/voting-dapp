@@ -1,31 +1,13 @@
 import React, { useState, useEffect } from "react";
-
-const TextInput = (setMessage) => {
-  const [voterAddress, setVoterAddress] = useState(null);
-  const onChangeHandler = (event) => {
-    setVoterAddress(event.target.value);
-    setMessage(null);
-  };
-  return [
-    <input id="newVoter" type="text" onChange={onChangeHandler} />,
-    voterAddress,
-  ];
-};
-
-const VoterList = ({voters}) => {
-
-  let listItems = '';
-  if (voters.length > 0){
-    listItems = <ul>{voters.map(item => <li key={item}>{item}</li>)}</ul>;
-  }
-  return listItems;
-}
+import { TextInput } from "./TextInput";
+import { SimpleList } from "./SimpleList";
+import { Alert, Button } from "@mui/material";
 
 const AddVoterComponent = ({status, contract}) => {
 
   const [voters, setVoters] = useState([]);
   const [message, setMessage] = useState(null);
-  const [Form, formValue] = TextInput(setMessage);
+  const [Form, formValue] = TextInput(setMessage, "newVoter");
 
   useEffect(() =>{
     if (status === 0) {
@@ -57,18 +39,18 @@ const AddVoterComponent = ({status, contract}) => {
   };  
 
   if (status !== 0) {
-    return (<div></div>);
+    return ('');
   }
 
   return (
     <div>
-      <h3>{"Register voters:"}</h3>
+      <h5>Register voters:</h5>
       {Form}
-      <button type="submit" onClick={setHandler}>
+      <Button type="submit" onClick={setHandler} variant="primary">
         Add voter
-      </button>
-      {message}
-      <VoterList voters={voters}/>
+      </Button>
+      <Alert>{message}</Alert> 
+      <SimpleList list={voters}/>
     </div>
   );
 };
