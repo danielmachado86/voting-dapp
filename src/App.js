@@ -1,13 +1,13 @@
 
 import Voting from "./artifacts/contracts/Voting.sol/Voting.json";
-import { WalletConnection } from "./WalletConnection";
-import './App.css';
+import { WalletConnection } from "./components/WalletConnection";
+// import './App.css';
 
 import '@fontsource/roboto/300.css';
 
 const { ethers } = require("ethers");
 
-const contractAddress = "0x4ed7c70F96B99c776995fB64377f0d4aB3B0e1C1";
+const contractAddress = "0x9A676e781A523b5d0C0e43731313A708CB607508";
 
 const provider = new ethers.providers.Web3Provider(window.ethereum);
 const signer = provider.getSigner();

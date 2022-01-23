@@ -103,11 +103,10 @@ contract Voting is Ownable{
         voters[_address].votedProposalId = 0;
     }
 
-    function endVotersRegistration() public onlyOwner onlyDuringVotersRegistration returns (ProcessStatus) {
+    function endVotersRegistration() public onlyOwner onlyDuringVotersRegistration {
         processStatus = ProcessStatus.RegisteringVotersEnded;
 
         emit VotersRegistrationEndedEvent();
-        return processStatus;
 
     }
 

@@ -1,6 +1,7 @@
 import AddVoterComponent from "./AddVoterComponent";
 import { useEffect, useState } from "react";
 import { ProposalRegistration } from "./ProposalRegistration";
+import { VerticalLinearStepper } from "./VerticalLinearStepper";
 
 
 export const StatusManager = ({ connected, contract }) => {
@@ -27,39 +28,33 @@ export const StatusManager = ({ connected, contract }) => {
   const setStatusHandler = () => {
     switch (status) {
       case 0:
-        contract.endVotersRegistration().then((result) => {
-          console.log(result);
-          setStatus(result);
+        contract.endVotersRegistration().then(() => {
+          setStatus(1);
         });
         break;
       case 1:
         contract.startProposalRegistration().then((result) => {
-          console.log(result);
-          setStatus(result);
+          setStatus(2);
         });
         break;
       case 2:
         contract.endProposalRegistration().then((result) => {
-          console.log(result);
-          setStatus(result);
+          setStatus(3);
         });
         break;
       case 3:
         contract.startVotesRegistration().then((result) => {
-          console.log(result);
-          setStatus(result);
+          setStatus(4);
         });
         break;
       case 4:
         contract.endVotesRegistration().then((result) => {
-          console.log(result);
-          setStatus(result);
+          setStatus(5);
         });
         break;
       case 5:
         contract.tallyVotes().then((result) => {
-          console.log(result);
-          setStatus(result);
+          setStatus(6);
         });
         break;
       default:
@@ -69,6 +64,7 @@ export const StatusManager = ({ connected, contract }) => {
 
   return (
     <div>
+      <VerticalLinearStepper status={status} setStatusHandler={setStatusHandler}/>
       {Status[status]}
       <button onClick={setStatusHandler}>Next</button>
       <AddVoterComponent status={status} contract={contract} />
